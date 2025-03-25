@@ -1,0 +1,67 @@
+(defun match (sym)
+  (if (equal (car input) sym)
+      (progn
+        (setf input (cdr input))
+        t)
+      nil))
+
+(defun I ()
+  (if (match 'i)
+      (progn
+        (E)
+        (S)
+        (if (and (not (null input)) (E)) ; For iESES
+            (S)))
+  (error "Expected 'i'")))
+
+(defun E ()
+  (G)
+  (E-prime))
+
+(defun E-prime ()
+  (if (match '0)
+      (progn
+        (G)
+        (E-prime))))
+
+(defun G ()
+  (if (match '<)
+      (progn
+        (match 'X) ; Assuming X, Y, Z, W are terminals
+        (match '])
+        (match 'Y)
+        (match '[)
+        (match 'Z)
+        (match '/)
+        (match 'W))
+      (error "Expected '<'")))
+
+(defun S ()
+  (cond
+    ((match 's) t)
+    ((match 'd)
+     (L)
+     (if (match 'b)
+         t
+         (error "Expected 'b'")))
+    (t (error "Expected 's' or 'd'"))))
+
+(defun L ()
+  (if (match 's)
+      (L-prime)
+      (error "Expected 's'")))
+
+(defun L-prime ()
+  (if (match 's)
+      (L-prime)))
+
+(defun parse (str)
+  (let ((input (coerce str 'list)))
+    (I)
+    (if (null input)
+        t
+        (error "Parsing failed: remaining input"))))
+
+; Example usage:
+; (parse "ixoyws") ; Should return t
+; (parse "ixoyowdssbes") ; May fail due to grammar mismatch
